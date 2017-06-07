@@ -3,3 +3,4 @@ Smarthings
 .qmake.stash
 Smarthings.pro.*
 moc_*
+Makefile

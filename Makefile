@@ -51,16 +51,20 @@ OBJECTS_DIR   = ./
 SOURCES       = main.cpp \
 		cpp/udp/udpserver.cpp \
 		cpp/tcp/tcpserver.cpp \
-		cpp/tcp/tcpconnection.cpp moc_udpserver.cpp \
+		cpp/tcp/tcpconnection.cpp \
+		cpp/serial/serialserver.cpp moc_udpserver.cpp \
 		moc_tcpserver.cpp \
-		moc_tcpconnection.cpp
+		moc_tcpconnection.cpp \
+		moc_serialserver.cpp
 OBJECTS       = main.o \
 		udpserver.o \
 		tcpserver.o \
 		tcpconnection.o \
+		serialserver.o \
 		moc_udpserver.o \
 		moc_tcpserver.o \
-		moc_tcpconnection.o
+		moc_tcpconnection.o \
+		moc_serialserver.o
 DIST          = /opt/Qt/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.8/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt/5.8/gcc_64/mkspecs/common/linux.conf \
@@ -230,10 +234,12 @@ DIST          = /opt/Qt/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.8/gcc_64/mkspecs/features/lex.prf \
 		Smarthings.pro cpp/udp/udpserver.h \
 		cpp/tcp/tcpserver.h \
-		cpp/tcp/tcpconnection.h main.cpp \
+		cpp/tcp/tcpconnection.h \
+		cpp/serial/serialserver.h main.cpp \
 		cpp/udp/udpserver.cpp \
 		cpp/tcp/tcpserver.cpp \
-		cpp/tcp/tcpconnection.cpp
+		cpp/tcp/tcpconnection.cpp \
+		cpp/serial/serialserver.cpp
 QMAKE_TARGET  = Smarthings
 DESTDIR       = 
 TARGET        = Smarthings
@@ -603,8 +609,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt/5.8/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents cpp/udp/udpserver.h cpp/tcp/tcpserver.h cpp/tcp/tcpconnection.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp cpp/udp/udpserver.cpp cpp/tcp/tcpserver.cpp cpp/tcp/tcpconnection.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents cpp/udp/udpserver.h cpp/tcp/tcpserver.h cpp/tcp/tcpconnection.h cpp/serial/serialserver.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp cpp/udp/udpserver.cpp cpp/tcp/tcpserver.cpp cpp/tcp/tcpconnection.cpp cpp/serial/serialserver.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -636,9 +642,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /opt/Qt/5.8/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /opt/Qt/5.8/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_udpserver.cpp moc_tcpserver.cpp moc_tcpconnection.cpp
+compiler_moc_header_make_all: moc_udpserver.cpp moc_tcpserver.cpp moc_tcpconnection.cpp moc_serialserver.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_udpserver.cpp moc_tcpserver.cpp moc_tcpconnection.cpp
+	-$(DEL_FILE) moc_udpserver.cpp moc_tcpserver.cpp moc_tcpconnection.cpp moc_serialserver.cpp
 moc_udpserver.cpp: /opt/Qt/5.8/gcc_64/include/QtCore/QObject \
 		/opt/Qt/5.8/gcc_64/include/QtCore/qobject.h \
 		/opt/Qt/5.8/gcc_64/include/QtCore/qobjectdefs.h \
@@ -866,6 +872,65 @@ moc_tcpconnection.cpp: /opt/Qt/5.8/gcc_64/include/QtCore/QObject \
 		/opt/Qt/5.8/gcc_64/bin/moc
 	/opt/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/marssola/Developers/Smarthings/Smarthings -I/opt/Qt/5.8/gcc_64/include -I/opt/Qt/5.8/gcc_64/include/QtSerialPort -I/opt/Qt/5.8/gcc_64/include/QtNetwork -I/opt/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include cpp/tcp/tcpconnection.h -o moc_tcpconnection.cpp
 
+moc_serialserver.cpp: /opt/Qt/5.8/gcc_64/include/QtCore/QObject \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtypetraits.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPort \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialport.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPortInfo \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportinfo.h \
+		cpp/serial/serialserver.h \
+		moc_predefs.h \
+		/opt/Qt/5.8/gcc_64/bin/moc
+	/opt/Qt/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/opt/Qt/5.8/gcc_64/mkspecs/linux-g++ -I/home/marssola/Developers/Smarthings/Smarthings -I/opt/Qt/5.8/gcc_64/include -I/opt/Qt/5.8/gcc_64/include/QtSerialPort -I/opt/Qt/5.8/gcc_64/include/QtNetwork -I/opt/Qt/5.8/gcc_64/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include cpp/serial/serialserver.h -o moc_serialserver.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_yacc_decl_make_all:
@@ -959,7 +1024,13 @@ main.o: main.cpp /opt/Qt/5.8/gcc_64/include/QtCore/QCoreApplication \
 		cpp/tcp/tcpconnection.h \
 		/opt/Qt/5.8/gcc_64/include/QtCore/QDebug \
 		/opt/Qt/5.8/gcc_64/include/QtNetwork/QTcpSocket \
-		/opt/Qt/5.8/gcc_64/include/QtNetwork/qtcpsocket.h
+		/opt/Qt/5.8/gcc_64/include/QtNetwork/qtcpsocket.h \
+		cpp/serial/serialserver.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPort \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialport.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPortInfo \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportinfo.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 udpserver.o: cpp/udp/udpserver.cpp cpp/udp/udpserver.h \
@@ -1183,6 +1254,63 @@ tcpconnection.o: cpp/tcp/tcpconnection.cpp cpp/tcp/tcpconnection.h \
 		/opt/Qt/5.8/gcc_64/include/QtNetwork/qabstractsocket.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tcpconnection.o cpp/tcp/tcpconnection.cpp
 
+serialserver.o: cpp/serial/serialserver.cpp cpp/serial/serialserver.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/QObject \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qtypetraits.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPort \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialport.h \
+		/opt/Qt/5.8/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/QSerialPortInfo \
+		/opt/Qt/5.8/gcc_64/include/QtSerialPort/qserialportinfo.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serialserver.o cpp/serial/serialserver.cpp
+
 moc_udpserver.o: moc_udpserver.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_udpserver.o moc_udpserver.cpp
 
@@ -1191,6 +1319,9 @@ moc_tcpserver.o: moc_tcpserver.cpp
 
 moc_tcpconnection.o: moc_tcpconnection.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_tcpconnection.o moc_tcpconnection.cpp
+
+moc_serialserver.o: moc_serialserver.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_serialserver.o moc_serialserver.cpp
 
 ####### Install
 

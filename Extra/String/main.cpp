@@ -8,19 +8,27 @@
 
 QJsonArray nodes;
 
+void readJson()
+{
+    foreach (QJsonValue obj, nodes) {
+        qDebug() << obj.toObject();
+    }
+    qDebug() << "";
+}
+
 int searchJSON(QString node, QString status)
 {
-    QVariantList nodes_list = nodes.toVariantList();
-    qDebug() << nodes_list;
-    /*foreach (const QJsonValue &obj, nodes) {
-        QJsonObject o = obj.toObject();
+    for (int i = 0; i < nodes.size(); i++) {
+        QJsonObject obj = nodes[i].toObject();
+        if (obj["node"] == node) {
+            QJsonObject newNode;
+            newNode.insert("node", node);
+            newNode.insert("status", status);
+            nodes.replace(i, newNode);
 
-        if (o["node"].toString() == node) {
-            o.insert("status", status);
-            nodes.insert(o);
             return 1;
         }
-    }*/
+    }
     return 0;
 }
 
@@ -60,22 +68,33 @@ int main(int argc, char *argv[])
     QStringList read_list;
 
     read_serial = "$00000002:$00000003:$00000004:$00100005:$00100006:";
-    qDebug() << read_serial;
+    //qDebug() << read_serial;
 
     read_list = read_serial.split(":");
     list(&read_list);
     read_list.clear();
 
-    qDebug() << nodes;
+    readJson();
 
-    /*read_serial = "$00100002:$00000003:$00100004:$00000005:$00100006:";
-    qDebug() << read_serial;
+    read_serial = "$00100002:$00000003:$00100004:$00000005:$00100006:";
+    //qDebug() << read_serial;
 
     read_list = read_serial.split(":");
     list(&read_list);
     read_list.clear();
 
-    qDebug() << nodes;*/
+    readJson();
+
+    read_serial = "$00100003:$00000006:$00000002:";
+    //qDebug() << read_serial;
+
+    read_list = read_serial.split(":");
+    list(&read_list);
+    read_list.clear();
+
+    readJson();
+
+
 
 
     return a.exec();

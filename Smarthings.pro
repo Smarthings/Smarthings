@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     cpp/udp/udpserver.cpp \
     cpp/tcp/tcpserver.cpp \
     cpp/tcp/tcpconnection.cpp \
-    cpp/serial/serialserver.cpp
+    cpp/serial/serialserver.cpp \
+    cpp/serial/nodes.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -30,4 +31,5 @@ HEADERS += \
     cpp/udp/udpserver.h \
     cpp/tcp/tcpserver.h \
     cpp/tcp/tcpconnection.h \
-    cpp/serial/serialserver.h
+    cpp/serial/serialserver.h \
+    cpp/serial/nodes.h

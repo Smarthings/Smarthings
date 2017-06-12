@@ -18,6 +18,7 @@ public:
 signals:
     void readyCmd();
     void cmdWait(const QByteArray &data);
+    void getSerial(const QString read_serial);
 
 public slots:
     void writeData(const QByteArray &data);

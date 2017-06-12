@@ -81,7 +81,7 @@ void SerialServer::readData()
         read_data.append(serial->readAll());
     }
     read_data.replace("\n", "");
-    qDebug() << "Read Serial: " << read_data;
+    emit getSerial(read_data);
 }
 
 void SerialServer::writeData(const QByteArray &data)

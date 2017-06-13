@@ -34,3 +34,16 @@ void TcpConnection::disconnected()
     socket->deleteLater();
     exit(0);
 }
+
+void TcpConnection::SocketWrite(QJsonArray nodes)
+{
+    if (socket->isWritable()) {
+        /*QByteArray bytes;
+        QDataStream out(&bytes, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_8);
+        out << nodes.toVariantList();*/
+
+        QJsonDocument json_doc(nodes);
+        socket->write(json_doc.toJson());
+    }
+}

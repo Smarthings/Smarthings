@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpServer>
+#include <QJsonArray>
 
 #include "tcpconnection.h"
 
@@ -14,8 +15,10 @@ public:
     ~TcpServer();
 
 signals:
+    void getNodes(QJsonArray nodes);
 
 public slots:
+    void nodesChanged(QJsonArray nodes);
 
 protected:
     int port;

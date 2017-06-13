@@ -31,7 +31,7 @@ void Nodes::addNodeJSON(QStringList *node)
             nodes_v.append(node_object);
         }
     }
-    qDebug() << nodes_v;
+    emit updateNodes(nodes_v);
 }
 
 int Nodes::searchNode(QString node, QString status)

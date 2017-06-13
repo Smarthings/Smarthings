@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 
     UdpServer udpServer;
     TcpServer tcpServer;
+    QObject::connect(&slaves, SIGNAL(updateNodes(QJsonArray)), &tcpServer, SLOT(nodesChanged(QJsonArray)));
 
     return a.exec();
 }

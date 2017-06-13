@@ -13,6 +13,7 @@ public:
     explicit Nodes(QJsonArray *var_nodes, QObject *parent = 0);
 
 signals:
+    void updateNodes(const QJsonArray nodes_v);
 
 public slots:
     void addNodes(QString get_serial);

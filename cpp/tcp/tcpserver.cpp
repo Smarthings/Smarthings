@@ -13,10 +13,16 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
 {
     TcpConnection *newConn = new TcpConnection(socketDescriptor, this);
     connect(newConn, SIGNAL(finished()), newConn, SLOT(deleteLater()));
+    connect(this, SIGNAL(getNodes(QJsonArray)), newConn, SLOT(SocketWrite(QJsonArray)));
     newConn->start();
 }
 
 TcpServer::~TcpServer()
 {
     this->disconnect();
+}
+
+void TcpServer::nodesChanged(QJsonArray nodes)
+{
+    emit getNodes(nodes);
 }

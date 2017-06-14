@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QVector>
 
 class Nodes : public QObject
 {
@@ -20,10 +21,11 @@ public slots:
 
 private:
     void addNodeJSON(QStringList *node);
-    int searchNode(QString node, QString status);
+    bool searchNode(QString node, QString status);
 
 protected:
     QJsonArray nodes_v;
+    QVector<qint8> update_nodes;
 };
 
 #endif // NODES_H

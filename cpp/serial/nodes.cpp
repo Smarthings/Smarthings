@@ -24,28 +24,34 @@ void Nodes::addNodes(QString get_serial)
 void Nodes::addNodeJSON(QStringList *node)
 {
     QJsonObject node_object {};
-    if (searchNode(node->at(1), node->at(0)) == 0) {
+    if (searchNode(node->at(1), node->at(0)) == false) {
         if (node->count() == 2) {
             node_object.insert("node", node->at(1));
             node_object.insert("status", node->at(0));
             nodes_v.append(node_object);
+            update_nodes.append(nodes_v.count() -1);
         }
     }
-    emit updateNodes(nodes_v);
+
+    update_nodes.clear();
+    //emit updateNodes(nodes_v);
 }
 
-int Nodes::searchNode(QString node, QString status)
+bool Nodes::searchNode(QString node, QString status)
 {
     for (int i = 0; i < nodes_v.size(); i++) {
         QJsonObject object = nodes_v[i].toObject();
         if (object["node"] == node) {
+            qDebug() << "update node";
             QJsonObject newNode;
             newNode.insert("node", node);
             newNode.insert("status", status);
             nodes_v.replace(i, newNode);
-
-            return 1;
+            if (object["status"] != status)
+                update_nodes.append(nodes_v.count() -1);
+            return true;
         }
     }
-    return 0;
+    qDebug() << "not Search";
+    return false;
 }

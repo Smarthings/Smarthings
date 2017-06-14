@@ -45,5 +45,6 @@ void TcpConnection::SocketWrite(QJsonArray nodes)
 
         QJsonDocument json_doc(nodes);
         socket->write(json_doc.toJson());
+        qDebug() << json_doc << endl;
     }
 }

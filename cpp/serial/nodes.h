@@ -22,6 +22,7 @@ public slots:
 private:
     void addNodeJSON(QStringList *node);
     bool searchNode(QString node, QString status);
+    void getNodesChanged();
 
 protected:
     QJsonArray nodes_v;

@@ -19,6 +19,7 @@ void Nodes::addNodes(QString get_serial)
         split_node.append(node.mid(5, 4));
         addNodeJSON(&split_node);
     }
+    getNodesChanged();
 }
 
 void Nodes::addNodeJSON(QStringList *node)
@@ -32,9 +33,6 @@ void Nodes::addNodeJSON(QStringList *node)
             update_nodes.append(nodes_v.count() -1);
         }
     }
-
-    update_nodes.clear();
-    //emit updateNodes(nodes_v);
 }
 
 bool Nodes::searchNode(QString node, QString status)
@@ -42,16 +40,27 @@ bool Nodes::searchNode(QString node, QString status)
     for (int i = 0; i < nodes_v.size(); i++) {
         QJsonObject object = nodes_v[i].toObject();
         if (object["node"] == node) {
-            qDebug() << "update node";
-            QJsonObject newNode;
-            newNode.insert("node", node);
-            newNode.insert("status", status);
-            nodes_v.replace(i, newNode);
-            if (object["status"] != status)
-                update_nodes.append(nodes_v.count() -1);
+            if (object["status"] != status) {
+                QJsonObject newNode;
+                newNode.insert("node", node);
+                newNode.insert("status", status);
+                nodes_v.replace(i, newNode);
+                update_nodes.append(i);
+            }
             return true;
         }
     }
-    qDebug() << "not Search";
     return false;
+}
+
+void Nodes::getNodesChanged()
+{
+    if (update_nodes.size() > 0) {
+        QJsonArray send_nodes;
+        for (int i = 0; i < update_nodes.size(); i++) {
+            send_nodes.append(nodes_v.at(update_nodes.at(i)));
+        }
+        update_nodes.clear();
+        emit updateNodes(send_nodes);
+    }
 }

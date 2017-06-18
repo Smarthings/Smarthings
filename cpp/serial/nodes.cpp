@@ -53,17 +53,9 @@ void Nodes::getNodesChanged()
 
 void Nodes::requireGetAllNodes()
 {
-    QJsonArray nodes_array;
-    QJsonObject nodes_object_construct;
     QJsonObject nodes_object_send;
-
-    QStringList list_all_nodes;
-    list_all_nodes = nodes_object.keys();
-
-    for (const QString &node: list_all_nodes) {
-        nodes_object_construct.insert(node, nodes_object[node]);
-    }
-    nodes_object_send.insert("Nodes", nodes_object_construct);
+    QJsonArray nodes_array;
+    nodes_object_send.insert("Nodes", nodes_object);
     nodes_array.push_back(nodes_object_send);
 
     emit sendAllNodes(nodes_array);

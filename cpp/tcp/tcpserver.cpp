@@ -13,6 +13,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
 {
     TcpConnection *newConn = new TcpConnection(socketDescriptor, this);
     connect(newConn, SIGNAL(finished()), newConn, SLOT(deleteLater()));
+    connect(newConn, SIGNAL(started()), this, SIGNAL(getAllNodes()));
     connect(this, SIGNAL(getNodes(QJsonArray)), newConn, SLOT(SocketWrite(QJsonArray)));
     newConn->start();
 }
@@ -26,3 +27,8 @@ void TcpServer::nodesChanged(QJsonArray nodes)
 {
     emit getNodes(nodes);
 }
+ void TcpServer::receiveAllNodes(QJsonArray nodes)
+ {
+    qDebug() << "receive all nodes";
+    emit getNodes(nodes);
+ }

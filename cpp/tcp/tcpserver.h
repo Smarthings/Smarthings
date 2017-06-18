@@ -16,13 +16,18 @@ public:
 
 signals:
     void getNodes(QJsonArray nodes);
+    void getAllNodes();
 
 public slots:
     void nodesChanged(QJsonArray nodes);
+    void receiveAllNodes(QJsonArray nodes);
 
 protected:
     int port;
     void incomingConnection(qintptr socketDescriptor);
+
+private:
+    QJsonArray *nodes_all;
 };
 
 #endif // TCPSERVER_H

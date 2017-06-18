@@ -11,22 +11,23 @@ class Nodes : public QObject
 {
     Q_OBJECT
 public:
-    explicit Nodes(QJsonArray *var_nodes, QObject *parent = 0);
+    explicit Nodes(QObject *parent = 0);
 
 signals:
-    void updateNodes(const QJsonArray nodes_v);
+    void updateNodes(const QJsonArray nodes_array);
+    void sendAllNodes(const QJsonArray nodes_array);
 
 public slots:
     void addNodes(QString get_serial);
+    void requireGetAllNodes();
 
 private:
-    void addNodeJSON(QStringList *node);
-    bool searchNode(QString node, QString status);
+    QJsonArray sendNodes(QJsonArray nodes_send);
     void getNodesChanged();
 
 protected:
-    QJsonArray nodes_v;
-    QVector<qint8> update_nodes;
+    QJsonObject nodes_object;
+    QStringList nodes_update;
 };
 
 #endif // NODES_H

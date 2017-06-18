@@ -7,95 +7,92 @@
 #include <QJsonObject>
 
 QJsonArray nodes;
+QJsonObject nodes_object;
 
-void readJson()
+void readJSON()
 {
-    foreach (QJsonValue obj, nodes) {
-        qDebug() << obj.toObject();
+    QByteArray val;
+    QFile file("/tmp/nodes.json");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    val = file.readAll();
+    file.close();
+
+    QJsonParseError errorParse;
+    QJsonDocument doc = QJsonDocument::fromJson(val, &errorParse);
+
+    qDebug() << "Status parsing: " << errorParse.error;
+
+    QJsonValue value = doc.array().at(0);
+    QJsonObject object = value.toObject();
+    QJsonValue nodes_value = object.value("Nodes");
+    QJsonObject nodes = nodes_value.toObject();
+
+    QStringList nodes_keys = nodes.keys();
+    QJsonObject n_object;
+    QJsonObject search = nodes["0006"].toObject();
+    /*if (!search.isEmpty()) {
+        n_object.insert("status", "0002");
+        nodes["0006"] = n_object;
+    } else {
+        qDebug() << "Não encontrado";
+    }*/
+
+    for (int i = 0; i < nodes_keys.count(); i++) {
+        qDebug() << "Node:" << nodes_keys.at(i) << "status:" << nodes.value(nodes_keys.at(i)).toObject().value("status").toString();
     }
-    qDebug() << "";
 }
 
-int searchJSON(QString node, QString status)
+void addJSON()
 {
-    for (int i = 0; i < nodes.size(); i++) {
-        QJsonObject obj = nodes[i].toObject();
-        if (obj["node"] == node) {
-            QJsonObject newNode;
-            newNode.insert("node", node);
-            newNode.insert("status", status);
-            nodes.replace(i, newNode);
+    QString str = "$00010001:$00000002:$00000003:$00010004:$00010005";
+    QStringList str_split = str.split(":");
 
-            return 1;
-        }
+    QJsonObject json_object;
+    for (const QString &s: str_split) {
+        QJsonObject new_object;
+        new_object.insert("status", s.mid(1, 4));
+        json_object.insert(QString(s.mid(5, 4)), new_object);
     }
-    return 0;
-}
 
-void listJSON(QStringList *list)
-{
-    QJsonObject object{};
-    if (list->count() == 2) {
-        if (searchJSON(list->at(1), list->at(0)) == 0) {
-            object.insert("node", list->at(1));
-            object.insert("status", list->at(0));
-            nodes.append(object);
-        }
+    QString name_node = "0006";
+    QJsonObject search = json_object[name_node].toObject();
+
+    QJsonObject new_object;
+    new_object.insert("status", "0000");
+    qDebug() << "search: " << search.isEmpty();
+    if (!search.isEmpty()) {
+        json_object[name_node] = new_object;
+    } else {
+        json_object.insert(name_node, new_object);
     }
-}
 
-void list(QStringList *list)
-{
-    int count = (list->count()) -1;
-    if (list->at(count) == "")
-        list->removeAt(count);
+    /*if (search.isObject()) {
+        qDebug() << "Existe: " << search.toObject().value("status");
+    } else {
+        qDebug() << "Não existe";
+    }*/
 
-    count = (list->count() -1);
+    QJsonObject final_object;
+    final_object.insert("Nodes", json_object);
 
-    foreach (const QString &str, *list) {
-        QStringList l;
-        l.append(str.mid(1, 4));
-        l.append(str.mid(5, 4));
-        listJSON(&l);
-    }
+    QJsonArray array;
+    array.push_back(final_object);
+
+    QJsonDocument doc(array);
+
+    QFile file("/tmp/nodes.json");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    file.write(doc.toJson());
+    file.close();
 }
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QString read_serial;
-    QStringList read_list;
-
-    read_serial = "$00000002:$00000003:$00000004:$00100005:$00100006:";
-    //qDebug() << read_serial;
-
-    read_list = read_serial.split(":");
-    list(&read_list);
-    read_list.clear();
-
-    readJson();
-
-    read_serial = "$00100002:$00000003:$00100004:$00000005:$00100006:";
-    //qDebug() << read_serial;
-
-    read_list = read_serial.split(":");
-    list(&read_list);
-    read_list.clear();
-
-    readJson();
-
-    read_serial = "$00100003:$00000006:$00000002:";
-    //qDebug() << read_serial;
-
-    read_list = read_serial.split(":");
-    list(&read_list);
-    read_list.clear();
-
-    readJson();
-
-
-
+    addJSON();
+    readJSON();
 
     return a.exec();
 }

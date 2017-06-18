@@ -1,8 +1,7 @@
 #include "nodes.h"
 
-Nodes::Nodes(QJsonArray *var_nodes, QObject *parent) : QObject(parent)
+Nodes::Nodes(QObject *parent) : QObject(parent)
 {
-    nodes_v = *var_nodes;
 }
 
 void Nodes::addNodes(QString get_serial)
@@ -13,54 +12,59 @@ void Nodes::addNodes(QString get_serial)
     if (read_list.at((read_list.count() - 1)) == "")
         read_list.removeAt((read_list.count() - 1));
 
-    foreach (const QString &node, read_list) {
-        QStringList split_node;
-        split_node.append(node.mid(1, 4));
-        split_node.append(node.mid(5, 4));
-        addNodeJSON(&split_node);
-    }
-    getNodesChanged();
-}
+    for (const QString &str: read_list) {
+        QString node = QString(str.mid(5, 4));
+        QString status = QString(str.mid(1, 4));
 
-void Nodes::addNodeJSON(QStringList *node)
-{
-    QJsonObject node_object {};
-    if (searchNode(node->at(1), node->at(0)) == false) {
-        if (node->count() == 2) {
-            node_object.insert("node", node->at(1));
-            node_object.insert("status", node->at(0));
-            nodes_v.append(node_object);
-            update_nodes.append(nodes_v.count() -1);
-        }
-    }
-}
+        QJsonObject new_object;
+        new_object.insert("status", status);
 
-bool Nodes::searchNode(QString node, QString status)
-{
-    for (int i = 0; i < nodes_v.size(); i++) {
-        QJsonObject object = nodes_v[i].toObject();
-        if (object["node"] == node) {
-            if (object["status"] != status) {
-                QJsonObject newNode;
-                newNode.insert("node", node);
-                newNode.insert("status", status);
-                nodes_v.replace(i, newNode);
-                update_nodes.append(i);
+        QJsonObject search = nodes_object[node].toObject();
+        if (!search.isEmpty()) {
+            if (nodes_object[node].toObject().value("status").toString() != status) {
+                nodes_object[node] = new_object;
+                nodes_update.append(node);
             }
-            return true;
+        } else {
+            nodes_object.insert(node, new_object);
+            nodes_update.append(node);
         }
     }
-    return false;
+
+    getNodesChanged();
 }
 
 void Nodes::getNodesChanged()
 {
-    if (update_nodes.size() > 0) {
-        QJsonArray send_nodes;
-        for (int i = 0; i < update_nodes.size(); i++) {
-            send_nodes.append(nodes_v.at(update_nodes.at(i)));
+    if (nodes_update.size() > 0) {
+        QJsonObject nodes_object_construct;
+        QJsonObject nodes_object_send;
+        QJsonArray nodes_array;
+        for (const QString &node: nodes_update) {
+            nodes_object_construct.insert(node, nodes_object[node]);
         }
-        update_nodes.clear();
-        emit updateNodes(send_nodes);
+        nodes_object_send.insert("Nodes", nodes_object_construct);
+        nodes_array.push_back(nodes_object_send);
+
+        nodes_update.clear();
+        emit updateNodes(nodes_array);
     }
+}
+
+void Nodes::requireGetAllNodes()
+{
+    QJsonArray nodes_array;
+    QJsonObject nodes_object_construct;
+    QJsonObject nodes_object_send;
+
+    QStringList list_all_nodes;
+    list_all_nodes = nodes_object.keys();
+
+    for (const QString &node: list_all_nodes) {
+        nodes_object_construct.insert(node, nodes_object[node]);
+    }
+    nodes_object_send.insert("Nodes", nodes_object_construct);
+    nodes_array.push_back(nodes_object_send);
+
+    emit sendAllNodes(nodes_array);
 }

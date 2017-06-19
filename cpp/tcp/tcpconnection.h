@@ -7,6 +7,8 @@
 #include <QTcpSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonObject>
 #include <QDataStream>
 
 class TcpConnection : public QThread
@@ -17,6 +19,7 @@ public:
     void run();
 
 signals:
+    void getCommandNode(QJsonObject object);
 
 public slots:
     void disconnected();

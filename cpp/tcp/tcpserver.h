@@ -17,10 +17,12 @@ public:
 signals:
     void getNodes(QJsonArray nodes);
     void getAllNodes();
+    void sendCommandNode(QJsonObject object);
 
 public slots:
     void nodesChanged(QJsonArray nodes);
     void receiveAllNodes(QJsonArray nodes);
+    void CommandNode(QJsonObject object);
 
 protected:
     int port;

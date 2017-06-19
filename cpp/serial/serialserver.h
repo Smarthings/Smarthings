@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QJsonObject>
+#include <QJsonValue>
 
 class SerialServer : public QObject
 {
@@ -21,6 +23,7 @@ signals:
     void getSerial(const QString read_serial);
 
 public slots:
+    void writeSerial(const QJsonObject nodes);
     void writeData(const QByteArray &data);
     void readData();
 

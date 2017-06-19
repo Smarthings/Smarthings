@@ -58,5 +58,6 @@ void Nodes::requireGetAllNodes()
     nodes_object_send.insert("Nodes", nodes_object);
     nodes_array.push_back(nodes_object_send);
 
+    qDebug() << nodes_array;
     emit sendAllNodes(nodes_array);
 }

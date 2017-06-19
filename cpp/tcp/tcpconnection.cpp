@@ -30,7 +30,13 @@ void TcpConnection::SocketRead()
     QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parseError);
 
     if (parseError.error == 0) {
-        qDebug() << doc_tcp.array();
+        for (const QJsonValue &json_object: doc_tcp.array()) {
+            for (const QString &key: json_object.toObject().keys()) {
+                if (key == "Node") {
+                    getCommandNode(json_object.toObject().value("Node").toObject());
+                }
+            }
+        }
     }
 }
 

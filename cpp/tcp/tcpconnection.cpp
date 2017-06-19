@@ -24,8 +24,14 @@ void TcpConnection::run()
 
 void TcpConnection::SocketRead()
 {
-    QByteArray Data = socket->readAll();
-    qDebug() << Data;
+    socket->flush();
+    QByteArray data = socket->readAll();
+    QJsonParseError parseError;
+    QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parseError);
+
+    if (parseError.error == 0) {
+        qDebug() << doc_tcp.array();
+    }
 }
 
 void TcpConnection::disconnected()
@@ -38,11 +44,6 @@ void TcpConnection::disconnected()
 void TcpConnection::SocketWrite(QJsonArray nodes)
 {
     if (socket->isWritable()) {
-        /*QByteArray bytes;
-        QDataStream out(&bytes, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_8);
-        out << nodes.toVariantList();*/
-
         QJsonDocument json_doc(nodes);
         socket->write(json_doc.toJson());
     }

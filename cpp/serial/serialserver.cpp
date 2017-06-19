@@ -87,5 +87,4 @@ void SerialServer::readData()
 void SerialServer::writeData(const QByteArray &data)
 {
     serial->write(data);
-    qDebug() << "Write Serial: " << data;
 }

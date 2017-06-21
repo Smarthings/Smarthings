@@ -96,6 +96,5 @@ void SerialServer::writeSerial(const QJsonObject nodes)
         QByteArray node_write;
         node_write.append(node.toString());
         serial->write(node_write);
-        qDebug() << node_write;
     }
 }

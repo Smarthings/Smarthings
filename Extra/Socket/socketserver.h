@@ -11,6 +11,7 @@ class SocketServer : public QObject
     Q_OBJECT
 public:
     explicit SocketServer(QObject *parent = nullptr);
+    ~SocketServer();
 
 signals:
 

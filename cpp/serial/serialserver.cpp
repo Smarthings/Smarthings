@@ -86,7 +86,6 @@ void SerialServer::readData()
 
 void SerialServer::writeData(const QByteArray &data)
 {
-    qDebug() << "Write Data" << data;
     serial->write(data);
 }
 
@@ -96,5 +95,17 @@ void SerialServer::writeSerial(const QJsonObject nodes)
         QByteArray node_write;
         node_write.append(node.toString());
         serial->write(node_write);
+    }
+}
+
+void SerialServer::prepareSerial(const QJsonObject nodes)
+{
+    QStringList nodes_list = nodes.keys();
+    for (const QString &node: nodes_list) {
+        QString range = nodes[node].toObject().value("action").toObject().value("range").toString();
+        QStringList str_node;
+        str_node << "#0" << range << "00" << node << ":";
+
+        serial->write(QString(str_node.join("")).toUtf8());
     }
 }

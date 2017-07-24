@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     QObject::connect(&tcpServer, SIGNAL(getAllNodes()), &slaves, SLOT(requireGetAllNodes()));
     QObject::connect(&slaves, SIGNAL(sendAllNodes(QJsonArray)), &tcpServer, SLOT(receiveAllNodes(QJsonArray)));
     QObject::connect(&slaves, SIGNAL(updateNodes(QJsonArray)), &tcpServer, SLOT(nodesChanged(QJsonArray)));
-    QObject::connect(&tcpServer, SIGNAL(sendCommandNode(QJsonObject)), &serialServer, SLOT(writeSerial(QJsonObject)));
+    QObject::connect(&tcpServer, SIGNAL(sendCommandNode(QJsonObject)), &serialServer, SLOT(prepareSerial(QJsonObject)));
 
     return a.exec();
 }

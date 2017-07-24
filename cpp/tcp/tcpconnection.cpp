@@ -42,7 +42,6 @@ void TcpConnection::SocketRead()
 
 void TcpConnection::disconnected()
 {
-    qDebug() << "Desconnect: " << socketDescriptor;
     socket->deleteLater();
     exit(0);
 }

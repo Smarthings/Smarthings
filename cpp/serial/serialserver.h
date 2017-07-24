@@ -24,6 +24,7 @@ signals:
 
 public slots:
     void writeSerial(const QJsonObject nodes);
+    void prepareSerial(const QJsonObject nodes);
     void writeData(const QByteArray &data);
     void readData();
 

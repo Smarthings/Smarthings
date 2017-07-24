@@ -4,3 +4,4 @@ Smarthings
 *.pro.*
 moc_*
 Makefile
+Extra/Socket/Socket

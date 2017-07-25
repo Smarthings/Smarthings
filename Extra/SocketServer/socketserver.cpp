@@ -14,8 +14,20 @@ SocketServer::SocketServer(QObject *parent) : QObject(parent)
 void SocketServer::connectClient()
 {
     qDebug() << "Connect";
-    QLocalSocket *conClient = server->nextPendingConnection();
-    connect(conClient, SIGNAL(disconnected()), conClient, SLOT(deleteLater()));
+    client = server->nextPendingConnection();
+    connect(client, SIGNAL(disconnected()), this, SLOT(closeClient()));
+
+    QByteArray block;
+    block = "Teste Connect";
+
+    client->write(block);
+    client->flush();
+}
+
+void SocketServer::closeClient()
+{
+    qDebug() << "Close client";
+    client->close();
 }
 
 SocketServer::~SocketServer()

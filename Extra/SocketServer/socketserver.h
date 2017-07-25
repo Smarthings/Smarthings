@@ -17,9 +17,11 @@ signals:
 
 public slots:
     void connectClient();
+    void closeClient();
 
 private:
     QLocalServer *server;
+    QLocalSocket *client;
 };
 
 #endif // SOCKETSERVER_H

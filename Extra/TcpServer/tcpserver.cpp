@@ -10,6 +10,11 @@ TcpServer::TcpServer(QObject *parent) : QObject(parent)
     } else {
         qDebug() << "Server start";
     }
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(sendDataClient()));
+    timer->start(4000);
+
 }
 
 void TcpServer::newConnection()
@@ -22,4 +27,13 @@ void TcpServer::newConnection()
 
     clients.at(0)->write("Qualquer coisa");
 
+}
+
+void TcpServer::sendDataClient()
+{
+    for (auto client: clients) {
+        qDebug() << "Send data to client" << client->peerAddress() << client->peerPort();
+        client->flush();
+        client->write("Data from server after 4 sec");
+    }
 }

@@ -15,7 +15,7 @@ public:
 signals:
 
 public slots:
-    void connectServer();
+    void readyFromServer();
 
 private:
     QTcpSocket *socket;

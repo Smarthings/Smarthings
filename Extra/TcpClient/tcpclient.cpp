@@ -14,17 +14,17 @@ TcpClient::TcpClient(QStringList args, QObject *parent) : QObject(parent)
         server_port = 9876;
     }
 
-    connect(socket, SIGNAL(connected()), this, SLOT(connectServer()));
-
-    socket->connectToHost(server_addr, server_port, QIODevice::ReadWrite);
+    connect(socket, SIGNAL(readyRead()), this, SLOT(readyFromServer()));
+    socket->connectToHost(server_addr, server_port);
 }
 
-void TcpClient::connectServer()
+void TcpClient::readyFromServer()
 {
     qDebug() << "Connect server";
     socket->flush();
 
-    QByteArray data = socket->readAll();
+    QByteArray data;
+    data = socket->readAll();
 
     qDebug() << data;
 }

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QList>
+#include <QTimer>
 #include <QTcpServer>
 #include <QTcpSocket>
 
@@ -17,6 +18,7 @@ signals:
 
 public slots:
     void newConnection();
+    void sendDataClient();
 
 protected:
     QTcpServer *server;

@@ -4,5 +4,5 @@ Smarthings
 *.pro.*
 moc_*
 Makefile
-Extra/SocketServer/Socket
-Extra/SocketClient/Client
+Extra/TcpServer
+Extra/TcpServer/TcpServer

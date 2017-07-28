@@ -33,7 +33,8 @@ void TcpServer::disconnectClient()
     int i = 0;
     for (auto client: clients) {
         if (client->state() != QTcpSocket::ConnectedState) {
-            qDebug() << "Desconnect" << client->peerAddress().toString() << client->peerPort();
+            qDebug() << "Desconnect:" << client->peerAddress() << client->peerPort();
+            client->close();
             clients.removeAt(i);
             break;
         }
@@ -44,7 +45,7 @@ void TcpServer::disconnectClient()
 void TcpServer::sendDataClient()
 {
     for (auto client: clients) {
-        qDebug() << "Send data to client" << client->state() << client->peerAddress() << client->peerPort();
+        qDebug() << "Send:" << client->peerAddress() << client->peerPort();
         client->flush();
         client->write("Data from server after 4 sec");
     }
@@ -54,7 +55,7 @@ void TcpServer::readSocket()
 {
     for (auto client: clients) {
         if (client->bytesAvailable()) {
-            qDebug() << "Read Socket" << client->peerAddress() << client->peerPort() << client->readAll();
+            qDebug() << "Read:" << client->peerAddress() << client->peerPort() << client->readAll();
         }
     }
 }

@@ -19,6 +19,8 @@ signals:
 public slots:
     void newConnection();
     void sendDataClient();
+    void readSocket();
+    void disconnectClient();
 
 protected:
     QTcpServer *server;

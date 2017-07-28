@@ -21,19 +21,40 @@ void TcpServer::newConnection()
 {
     qDebug() << "new Connection";
 
-    clients.push_back(server->nextPendingConnection());
+    QTcpSocket *client = server->nextPendingConnection();
+    connect(client, SIGNAL(readyRead()), this, SLOT(readSocket()));
+    connect(client, SIGNAL(disconnected()), this, SLOT(disconnectClient()));
 
-    qDebug() << "Clients: " << clients.count();
+    clients.append(client);
+}
 
-    clients.at(0)->write("Qualquer coisa");
-
+void TcpServer::disconnectClient()
+{
+    int i = 0;
+    for (auto client: clients) {
+        if (client->state() != QTcpSocket::ConnectedState) {
+            qDebug() << "Desconnect" << client->peerAddress().toString() << client->peerPort();
+            clients.removeAt(i);
+            break;
+        }
+        i++;
+    }
 }
 
 void TcpServer::sendDataClient()
 {
     for (auto client: clients) {
-        qDebug() << "Send data to client" << client->peerAddress() << client->peerPort();
+        qDebug() << "Send data to client" << client->state() << client->peerAddress() << client->peerPort();
         client->flush();
         client->write("Data from server after 4 sec");
+    }
+}
+
+void TcpServer::readSocket()
+{
+    for (auto client: clients) {
+        if (client->bytesAvailable()) {
+            qDebug() << "Read Socket" << client->peerAddress() << client->peerPort() << client->readAll();
+        }
     }
 }

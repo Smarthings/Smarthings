@@ -16,6 +16,10 @@ TcpClient::TcpClient(QStringList args, QObject *parent) : QObject(parent)
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyFromServer()));
     socket->connectToHost(server_addr, server_port);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(writeSocket()));
+    timer->start(5000);
 }
 
 void TcpClient::readyFromServer()
@@ -27,4 +31,13 @@ void TcpClient::readyFromServer()
     data = socket->readAll();
 
     qDebug() << data;
+}
+
+void TcpClient::writeSocket()
+{
+    qDebug() << "Write socket";
+    socket->flush();
+    QByteArray msg = "Message from client ";
+    msg.append(QString(i++));
+    socket->write(msg);
 }

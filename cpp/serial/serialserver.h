@@ -24,9 +24,12 @@ signals:
 
 public slots:
     void writeSerial(const QJsonObject nodes);
-    void prepareSerial(const QJsonObject nodes);
+    void receiveCommand(const QJsonObject commands);
     void writeData(const QByteArray &data);
     void readData();
+
+protected:
+    void prepareSerial(const QJsonObject node);
 
 private:
     void closeSerialPort();

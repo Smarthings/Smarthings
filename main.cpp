@@ -19,10 +19,11 @@ int main(int argc, char *argv[])
 
     UdpServer udpServer;
     TcpServer tcpServer;
-    QObject::connect(&tcpServer, SIGNAL(getAllNodes()), &slaves, SLOT(requireGetAllNodes()));
-    QObject::connect(&slaves, SIGNAL(sendAllNodes(QJsonArray)), &tcpServer, SLOT(receiveAllNodes(QJsonArray)));
-    QObject::connect(&slaves, SIGNAL(updateNodes(QJsonArray)), &tcpServer, SLOT(nodesChanged(QJsonArray)));
-    QObject::connect(&tcpServer, SIGNAL(sendCommandNode(QJsonObject)), &serialServer, SLOT(prepareSerial(QJsonObject)));
+
+    QObject::connect(&tcpServer, SIGNAL(getAllNodes(QTcpSocket*)), &slaves, SLOT(requireGetAllNodes(QTcpSocket*)));
+    QObject::connect(&slaves, SIGNAL(sendAllNodes(QJsonArray, QTcpSocket*)), &tcpServer, SLOT(writeWithSocket(QJsonArray, QTcpSocket*)));
+    QObject::connect(&slaves, SIGNAL(updateNodes(QJsonArray)), &tcpServer, SLOT(writeAllSocket(QJsonArray)));
+    QObject::connect(&tcpServer, SIGNAL(sendCommandFromNode(QJsonObject)), &serialServer, SLOT(receiveCommand(QJsonObject)));
 
     return a.exec();
 }

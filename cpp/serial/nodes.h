@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVector>
+#include <QTcpSocket>
 
 class Nodes : public QObject
 {
@@ -15,11 +16,11 @@ public:
 
 signals:
     void updateNodes(const QJsonArray nodes_array);
-    void sendAllNodes(const QJsonArray nodes_array);
+    void sendAllNodes(const QJsonArray nodes_array, QTcpSocket *client);
 
 public slots:
     void addNodes(QString get_serial);
-    void requireGetAllNodes();
+    void requireGetAllNodes(QTcpSocket *client);
 
 private:
     QJsonArray sendNodes(QJsonArray nodes_send);

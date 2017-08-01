@@ -7,6 +7,9 @@
 #include <QSerialPortInfo>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QTimer>
+#include <QTime>
+#include <QDateTime>
 
 class SerialServer : public QObject
 {
@@ -27,6 +30,7 @@ public slots:
     void receiveCommand(const QJsonObject commands);
     void writeData(const QByteArray &data);
     void readData();
+    void stopWatch();
 
 protected:
     void prepareSerial(const QJsonObject node);
@@ -35,6 +39,8 @@ private:
     void closeSerialPort();
     void handleError(QSerialPort::SerialPortError);
     QSerialPort *serial;
+    QList<QJsonObject> list_stopwatch;
+    QTimer *timer = new QTimer(this);
 };
 
 #endif // SERIALSERVER_H

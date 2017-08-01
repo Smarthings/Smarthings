@@ -102,7 +102,6 @@ void SerialServer::writeSerial(const QJsonObject nodes)
 
 void SerialServer::receiveCommand(const QJsonObject commands)
 {
-    qDebug() << commands;
     QStringList command_list = commands.keys();
     for (const QString &it: command_list) {
         QStringList command = commands[it].toObject().keys();
@@ -118,9 +117,21 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                 QJsonObject::const_iterator i = commands[it].toObject().value(key).toObject().find("time");
                 if (commands[it].toObject().value(key).toObject().contains("time") && i.key() == "time") {
                     if (commands[it].toObject().value(key).toObject().contains("action")) {
-                        QJsonObject node;
-                        node.insert(it, commands[it].toObject().value(key));
+                        QJsonObject timestamp, objts, node;
+
+                        uint ts = QDateTime::currentDateTime().toTime_t();
+                        uint sec = i.value().toInt();
+                        timestamp.insert("start", QString(ts));
+                        timestamp.insert("end", QString(ts + sec));
+
+                        objts.insert("action", commands[it].toObject().value(key).toObject().value("action").toObject());
+                        objts.insert("time", commands[it].toObject().value(key).toObject().value("time").toInt());
+                        objts.insert("timestamp", timestamp);
+
+                        node.insert(it, objts);
                         list_stopwatch.append(node);
+
+                        qDebug() << node;
                     }
                     timer->start(1000);
                     connect(timer, SIGNAL(timeout()), this, SLOT(stopWatch()));
@@ -147,15 +158,14 @@ void SerialServer::stopWatch()
                 QJsonObject objs, node;
                 objs.insert("time", (list_stopwatch.at(i).value(key).toObject().value("time").toInt() - 1));
                 objs.insert("action", list_stopwatch.at(i).value(key).toObject().value("action").toObject());
+                objs.insert("timestamp", list_stopwatch.at(i).value(key).toObject().value("timestamp").toObject());
                 node.insert(key, objs);
-                qDebug() << node;
                 list_stopwatch.replace(i, node);
             } else {
                 QJsonObject node;
                 node.insert(key, list_stopwatch.at(i).value(key).toObject().value("action"));
-                qDebug() << "Send" << node;
-                prepareSerial(node);
                 list_stopwatch.removeAt(i);
+                prepareSerial(node);
             }
         }
     }

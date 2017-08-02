@@ -2,9 +2,13 @@
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
-SerialServer::SerialServer(QObject *parent) :
+SerialServer::SerialServer(bool simulate, QObject *parent) :
     QObject(parent)
 {
+    v_simulate = simulate;
+    if (v_simulate)
+        return;
+
     serial = new QSerialPort(this);
     this->ConfigureSerial();
     this->openSerialPort();
@@ -12,8 +16,6 @@ SerialServer::SerialServer(QObject *parent) :
     connect(serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error), this, &SerialServer::handleError);
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
     connect(this, SIGNAL(cmdWait(QByteArray)), this, SLOT(writeData(QByteArray)));
-
-
 }
 
 void SerialServer::ConfigureSerial()
@@ -88,11 +90,15 @@ void SerialServer::readData()
 
 void SerialServer::writeData(const QByteArray &data)
 {
+    if (v_simulate)
+        return;
     serial->write(data);
 }
 
 void SerialServer::writeSerial(const QJsonObject nodes)
 {
+    if (v_simulate)
+        return;
     for (const QJsonValue &node: nodes) {
         QByteArray node_write;
         node_write.append(node.toString());
@@ -119,10 +125,10 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                     if (commands[it].toObject().value(key).toObject().contains("action")) {
                         QJsonObject timestamp, objts, node;
 
-                        uint ts = QDateTime::currentDateTime().toTime_t();
-                        uint sec = i.value().toInt();
-                        timestamp.insert("start", QString(ts));
-                        timestamp.insert("end", QString(ts + sec));
+                        int ts = QDateTime::currentDateTime().toTime_t();
+                        int sec = i.value().toInt();
+                        timestamp.insert("start", ts);
+                        timestamp.insert("end", ts + sec);
 
                         objts.insert("action", commands[it].toObject().value(key).toObject().value("action").toObject());
                         objts.insert("time", commands[it].toObject().value(key).toObject().value("time").toInt());
@@ -133,8 +139,11 @@ void SerialServer::receiveCommand(const QJsonObject commands)
 
                         qDebug() << node;
                     }
-                    timer->start(1000);
+
                     connect(timer, SIGNAL(timeout()), this, SLOT(stopWatch()));
+                    if (!timer->isActive()) {
+                        timer->start(1000);
+                    }
                     continue;
                 }
             }
@@ -146,7 +155,8 @@ void SerialServer::prepareSerial(const QJsonObject node)
 {
     QStringList write_node;
     write_node << "#0" << node[node.keys()[0]].toObject().value("range").toString() << "00" << node.keys()[0] << ":";
-    serial->write(QString(write_node.join("")).toUtf8());
+    if (!v_simulate)
+        serial->write(QString(write_node.join("")).toUtf8());
 }
 
 void SerialServer::stopWatch()

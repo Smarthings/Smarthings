@@ -2,6 +2,7 @@
 
 Nodes::Nodes(QObject *parent) : QObject(parent)
 {
+
 }
 
 void Nodes::addNodes(QString get_serial)
@@ -13,7 +14,6 @@ void Nodes::addNodes(QString get_serial)
         read_list.removeAt((read_list.count() - 1));
 
     for (const QString &str: read_list) {
-
         /*   s r  t  a
          * $ 1 30 01 006 :
          */
@@ -22,10 +22,6 @@ void Nodes::addNodes(QString get_serial)
         QString range = QString(str.mid(2, 2));
         QString type = QString(str.mid(4, 2));
         QString address = QString(str.mid(6, 3));
-
-        /*QString node = QString(str.mid(5, 4));
-        QString status = QString(str.mid(4, 1));
-        QString range = QString(str.mid(1, 3));*/
 
         QJsonObject new_object;
         new_object.insert("status", status);
@@ -43,18 +39,6 @@ void Nodes::addNodes(QString get_serial)
             nodes_object.insert(address, new_object);
             nodes_update.append(address);
         }
-
-        /*QJsonObject search = nodes_object[node].toObject();
-        if (!search.isEmpty()) {
-            if (nodes_object[node].toObject().value("status").toString() != status ||
-                    nodes_object[node].toObject().value("range").toString() != range) {
-                nodes_object[node] = new_object;
-                nodes_update.append(node);
-            }
-        } else {
-            nodes_object.insert(node, new_object);
-            nodes_update.append(node);
-        }*/
     }
     getNodesChanged();
 }

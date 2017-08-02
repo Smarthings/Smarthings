@@ -1,4 +1,6 @@
 #include <QCoreApplication>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 #include <QThread>
 #include <QObject>
 
@@ -9,13 +11,36 @@
 #include "cpp/serial/serialserver.h"
 #include "cpp/serial/nodes.h"
 
+#include "cpp/serial/serialsimulator.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    QCoreApplication::setApplicationName("smarthings");
+    QCoreApplication::setApplicationVersion("0.1a");
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Help Smarthings");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption showSimulatorSerial({"s", "simulate"}, QCoreApplication::translate("simulate", "Simulate serial - example of nodes"));
+    parser.addOption(showSimulatorSerial);
+    parser.process(a);
+
+    bool simulate = parser.isSet(showSimulatorSerial);
 
     Nodes slaves;
-    SerialServer serialServer;
+    SerialServer serialServer(simulate);
     QObject::connect(&serialServer, SIGNAL(getSerial(QString)), &slaves, SLOT(addNodes(QString)));
+
+    SerialSimulator serialSimulator;
+    QObject::connect(&serialSimulator, SIGNAL(getSerial(QString)), &slaves, SLOT(addNodes(QString)));
+
+    if (simulate) {
+        qDebug() << "[ Ok ] Simulator mode";
+        serialSimulator.CreateNodes();
+    }
 
     UdpServer udpServer;
     TcpServer tcpServer;

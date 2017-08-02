@@ -15,7 +15,7 @@ class SerialServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit SerialServer(QObject *parent = 0);
+    explicit SerialServer(bool simulate = false, QObject *parent = 0);
     void ConfigureSerial();
     void openSerialPort();
     QStringList AvailablePorts();
@@ -41,6 +41,8 @@ private:
     QSerialPort *serial;
     QList<QJsonObject> list_stopwatch;
     QTimer *timer = new QTimer(this);
+
+    bool v_simulate = false;
 };
 
 #endif // SERIALSERVER_H

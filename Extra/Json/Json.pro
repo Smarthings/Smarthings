@@ -1,20 +1,16 @@
-QT += core serialport network
+QT += core
 QT -= gui
 
 CONFIG += c++11
 
-TARGET = Smarthings
+TARGET = Json
 CONFIG += console
 CONFIG -= app_bundle
 
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    cpp/udp/udpserver.cpp \
-    cpp/serial/serialserver.cpp \
-    cpp/serial/nodes.cpp \
-    cpp/tcp/tcpserver.cpp \
-    cpp/serial/serialsimulator.cpp
+    jsontest.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -28,9 +24,4 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
-    cpp/udp/udpserver.h \
-    cpp/serial/serialserver.h \
-    cpp/serial/nodes.h \
-    cpp/tcp/tcpserver.h \
-    cpp/serial/serialsimulator.h \
-    cpp/serial/serialsimulator.h
+    jsontest.h

@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     if (simulate) {
         qDebug() << "[ Ok ] Simulator mode";
         serialSimulator.CreateNodes();
+        QObject::connect(&serialServer, SIGNAL(writeSerialSimulate(QJsonObject)), &slaves, SLOT(writeSerialSimulate(QJsonObject)));
     }
 
     UdpServer udpServer;

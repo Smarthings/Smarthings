@@ -4,6 +4,11 @@
 #include <QObject>
 #include <QDebug>
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
 class SerialSimulator : public QObject
 {
     Q_OBJECT

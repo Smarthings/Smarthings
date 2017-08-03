@@ -70,3 +70,20 @@ void Nodes::requireGetAllNodes(QTcpSocket *client)
 
     emit sendAllNodes(nodes_array, client);
 }
+
+void Nodes::writeSerialSimulate(QJsonObject node)
+{
+    QStringList keys = node.keys();
+    for (const QString &n: keys) {
+        if (node[n].toObject().value("range").toString() != nodes_object[n].toObject().value("range").toString()) {
+            QJsonObject new_object;
+            new_object.insert("status", nodes_object[n].toObject().value("status").toString());
+            new_object.insert("range", node[n].toObject().value("range").toString());
+            new_object.insert("type", nodes_object[n].toObject().value("type").toString());
+
+            nodes_object[n] = new_object;
+            nodes_update.append(n);
+        }
+    }
+    getNodesChanged();
+}

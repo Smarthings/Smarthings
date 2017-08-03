@@ -24,6 +24,7 @@ signals:
     void readyCmd();
     void cmdWait(const QByteArray &data);
     void getSerial(const QString read_serial);
+    void writeSerialSimulate(QJsonObject node);
 
 public slots:
     void writeSerial(const QJsonObject nodes);

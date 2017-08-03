@@ -120,25 +120,21 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                 continue;
             }
             if (key == "stopwatch") {
-                QJsonObject::const_iterator i = commands[it].toObject().value(key).toObject().find("time");
-                if (commands[it].toObject().value(key).toObject().contains("time") && i.key() == "time") {
-                    if (commands[it].toObject().value(key).toObject().contains("action")) {
-                        QJsonObject timestamp, objts, node;
+                    if (commands[it].toObject().value(key).toObject().contains("time") &&
+                        commands[it].toObject().value(key).toObject().contains("action")) {
+                    QJsonObject timestamp, objts, node;
 
-                        int ts = QDateTime::currentDateTime().toTime_t();
-                        int sec = i.value().toInt();
-                        timestamp.insert("start", ts);
-                        timestamp.insert("end", ts + sec);
+                    int ts = QDateTime::currentDateTime().toTime_t();
+                    int sec = commands[it].toObject().value(key).toObject().value("time").toInt();
+                    timestamp.insert("start", ts);
+                    timestamp.insert("end", ts + sec);
 
-                        objts.insert("action", commands[it].toObject().value(key).toObject().value("action").toObject());
-                        objts.insert("time", commands[it].toObject().value(key).toObject().value("time").toInt());
-                        objts.insert("timestamp", timestamp);
+                    objts.insert("action", commands[it].toObject().value(key).toObject().value("action").toObject());
+                    objts.insert("time", commands[it].toObject().value(key).toObject().value("time").toInt());
+                    objts.insert("timestamp", timestamp);
 
-                        node.insert(it, objts);
-                        list_stopwatch.append(node);
-
-                        qDebug() << node;
-                    }
+                    node.insert(it, objts);
+                    list_stopwatch.append(node);
 
                     connect(timer, SIGNAL(timeout()), this, SLOT(stopWatch()));
                     if (!timer->isActive()) {
@@ -157,6 +153,8 @@ void SerialServer::prepareSerial(const QJsonObject node)
     write_node << "#0" << node[node.keys()[0]].toObject().value("range").toString() << "00" << node.keys()[0] << ":";
     if (!v_simulate)
         serial->write(QString(write_node.join("")).toUtf8());
+    else
+        emit writeSerialSimulate(node);
 }
 
 void SerialServer::stopWatch()

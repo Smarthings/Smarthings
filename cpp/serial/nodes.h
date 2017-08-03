@@ -21,6 +21,7 @@ signals:
 public slots:
     void addNodes(QString get_serial);
     void requireGetAllNodes(QTcpSocket *client);
+    void writeSerialSimulate(QJsonObject node);
 
 private:
     QJsonArray sendNodes(QJsonArray nodes_send);

@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&tcpServer, SIGNAL(getAllNodes(QTcpSocket*)), &slaves, SLOT(requireGetAllNodes(QTcpSocket*)));
     QObject::connect(&slaves, SIGNAL(sendAllNodes(QJsonArray, QTcpSocket*)), &tcpServer, SLOT(writeWithSocket(QJsonArray, QTcpSocket*)));
+    QObject::connect(&serialServer, SIGNAL(sendStopwatchCommand(QJsonArray)), &tcpServer, SLOT(writeAllSocket(QJsonArray)));
     QObject::connect(&slaves, SIGNAL(updateNodes(QJsonArray)), &tcpServer, SLOT(writeAllSocket(QJsonArray)));
     QObject::connect(&tcpServer, SIGNAL(sendCommandFromNode(QJsonObject)), &serialServer, SLOT(receiveCommand(QJsonObject)));
 

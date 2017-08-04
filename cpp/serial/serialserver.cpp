@@ -136,6 +136,13 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                     node.insert(it, objts);
                     list_stopwatch.append(node);
 
+                    QJsonObject node_send;
+                    QJsonArray node_array;
+
+                    node_send.insert("Stopwatch", node);
+                    node_array.append(node_send);
+                    emit sendStopwatchCommand(node_array);
+
                     connect(timer, SIGNAL(timeout()), this, SLOT(stopWatch()));
                     if (!timer->isActive()) {
                         timer->start(1000);

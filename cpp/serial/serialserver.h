@@ -6,6 +6,7 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QJsonValue>
 #include <QTimer>
 #include <QTime>
@@ -25,6 +26,7 @@ signals:
     void cmdWait(const QByteArray &data);
     void getSerial(const QString read_serial);
     void writeSerialSimulate(QJsonObject node);
+    void sendStopwatchCommand(QJsonArray node_array);
 
 public slots:
     void writeSerial(const QJsonObject nodes);

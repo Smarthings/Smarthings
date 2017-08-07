@@ -55,7 +55,6 @@ void TcpServer::writeWithSocket(QJsonArray nodes, QTcpSocket *client)
 void TcpServer::writeAllSocket(QJsonArray nodes)
 {
     QJsonDocument json_document(nodes);
-    qDebug() << json_document;
     for (auto client: clients) {
         client->flush();
         client->write(json_document.toJson());
@@ -67,7 +66,7 @@ void TcpServer::disconnectSocket()
     int i = 0;
     for (auto client: clients) {
         if (client->state() != QTcpSocket::ConnectedState) {
-            qDebug() << "Disconnect:" << client->peerAddress().toString() << client->peerPort();
+            //qDebug() << "Disconnect:" << client->peerAddress().toString() << client->peerPort();
             client->close();
             clients.removeAt(i);
             break;

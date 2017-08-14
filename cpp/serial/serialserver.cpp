@@ -126,12 +126,9 @@ void SerialServer::receiveCommand(const QJsonObject commands)
 
                     int ts = QDateTime::currentDateTime().toTime_t();
                     int sec = commands[it].toObject().value(key).toObject().value("time").toInt();
-                    timestamp.insert("start", ts);
-                    timestamp.insert("end", ts + sec);
 
-                    objts.insert("action", commands[it].toObject().value(key).toObject().value("action").toObject());
-                    objts.insert("time", commands[it].toObject().value(key).toObject().value("time").toInt());
-                    objts.insert("timestamp", timestamp);
+                    objts.insert("to_range", commands[it].toObject().value(key).toObject().value("action").toObject().value("range").toString());
+                    objts.insert("end", ts + sec);
 
                     node.insert(it, objts);
                     list_stopwatch.append(node);
@@ -169,16 +166,11 @@ void SerialServer::stopWatch()
     for (quint8 i = 0; i < list_stopwatch.count(); i++) {
         QStringList nodes = list_stopwatch.at(i).keys();
         for (QString key: nodes) {
-            if (list_stopwatch.at(i).value(key).toObject().value("time").toInt() > 0) {
-                QJsonObject objs, node;
-                objs.insert("time", (list_stopwatch.at(i).value(key).toObject().value("time").toInt() - 1));
-                objs.insert("action", list_stopwatch.at(i).value(key).toObject().value("action").toObject());
-                objs.insert("timestamp", list_stopwatch.at(i).value(key).toObject().value("timestamp").toObject());
-                node.insert(key, objs);
-                list_stopwatch.replace(i, node);
-            } else {
-                QJsonObject node;
-                node.insert(key, list_stopwatch.at(i).value(key).toObject().value("action"));
+
+            if (list_stopwatch.at(i).value(key).toObject().value("end").toInt() <= (int) QDateTime::currentDateTime().toTime_t()) {
+                QJsonObject range, node;
+                range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                node.insert(key, range);
                 list_stopwatch.removeAt(i);
                 prepareSerial(node);
             }

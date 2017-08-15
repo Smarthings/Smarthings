@@ -18,9 +18,9 @@ void Nodes::addNodes(QString get_serial)
          * $ 1 30 01 006 :
          */
 
-        QString status = QString(str.mid(1, 1));
-        QString range = QString(str.mid(2, 2));
-        QString type = QString(str.mid(4, 2));
+        double status = QString(str.mid(1, 1)).toInt();
+        double range = QString(str.mid(2, 2)).toInt();
+        double type = QString(str.mid(4, 2)).toInt();
         QString address = QString(str.mid(6, 3));
 
         QJsonObject new_object;
@@ -30,8 +30,8 @@ void Nodes::addNodes(QString get_serial)
 
         QJsonObject search = nodes_object[address].toObject();
         if (!search.isEmpty()) {
-            if (nodes_object[address].toObject().value("range").toString() != range ||
-                    nodes_object[address].toObject().value("status").toString() != status) {
+            if (nodes_object[address].toObject().value("range").toDouble() != range ||
+                    nodes_object[address].toObject().value("status").toDouble() != status) {
                 nodes_object[address] = new_object;
                 nodes_update.append(address);
             }
@@ -62,7 +62,6 @@ void Nodes::getNodesChanged()
 
 void Nodes::requireGetAllNodes(QTcpSocket *client)
 {
-
     QJsonObject nodes_object_send;
     QJsonArray nodes_array;
     nodes_object_send.insert("Nodes", nodes_object);
@@ -77,9 +76,18 @@ void Nodes::writeSerialSimulate(QJsonObject node)
     for (const QString &n: keys) {
         if (node[n].toObject().value("range").toString() != nodes_object[n].toObject().value("range").toString()) {
             QJsonObject new_object;
-            new_object.insert("status", nodes_object[n].toObject().value("status").toString());
-            new_object.insert("range", node[n].toObject().value("range").toString());
-            new_object.insert("type", nodes_object[n].toObject().value("type").toString());
+            double status = nodes_object[n].toObject().value("status").toDouble();
+            double range;
+            if (node[n].toObject().value("range").type() == 2) {
+                range = node[n].toObject().value("range").toDouble();
+            } else {
+                range = node[n].toObject().value("range").toString().toDouble();
+            }
+            double type = nodes_object[n].toObject().value("type").toDouble();
+
+            new_object.insert("status", status);
+            new_object.insert("range", range);
+            new_object.insert("type", type);
 
             nodes_object[n] = new_object;
             nodes_update.append(n);

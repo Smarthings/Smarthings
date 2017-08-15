@@ -115,7 +115,6 @@ void SerialServer::receiveCommand(const QJsonObject commands)
             if (key == "action") {
                 QJsonObject node;
                 node.insert(it, commands[it].toObject().value(key));
-
                 prepareSerial(node);
                 continue;
             }
@@ -167,7 +166,7 @@ void SerialServer::stopWatch()
         QStringList nodes = list_stopwatch.at(i).keys();
         for (QString key: nodes) {
 
-            if (list_stopwatch.at(i).value(key).toObject().value("end").toInt() <= (int) QDateTime::currentDateTime().toTime_t()) {
+            if (list_stopwatch.at(i).value(key).toObject().value("end").toDouble() <= (double) QDateTime::currentDateTime().toTime_t()) {
                 QJsonObject range, node;
                 range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
                 node.insert(key, range);

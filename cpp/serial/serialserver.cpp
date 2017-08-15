@@ -2,12 +2,13 @@
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
-SerialServer::SerialServer(bool simulate, QObject *parent) :
+SerialServer::SerialServer(bool simulate, QString port, QObject *parent) :
     QObject(parent)
 {
     v_simulate = simulate;
     if (v_simulate)
         return;
+    v_port = port;
 
     serial = new QSerialPort(this);
     this->ConfigureSerial();
@@ -22,7 +23,10 @@ void SerialServer::ConfigureSerial()
 {
     qDebug() << "Configure Serial";
     QStringList ports = this->AvailablePorts();
-    serial->setPortName(ports.at(4));
+    if (v_port.isNull())
+        serial->setPortName(ports.at(4));
+    else
+        serial->setPortName(v_port);
     serial->setBaudRate(QSerialPort::Baud57600, QSerialPort::AllDirections);
     serial->setDataBits(QSerialPort::Data8);
     serial->setParity(QSerialPort::NoParity);

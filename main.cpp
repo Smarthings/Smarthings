@@ -26,12 +26,18 @@ int main(int argc, char *argv[])
 
     QCommandLineOption showSimulatorSerial({"s", "simulate"}, QCoreApplication::translate("simulate", "Simulate serial - example of nodes"));
     parser.addOption(showSimulatorSerial);
+
+    QCommandLineOption setSerialPort(QStringList() << "p" << "serial-port",
+                                     QCoreApplication::translate("serial-port", "Set serial port"),
+                                     QCoreApplication::translate("serial-port", "/dev/ttyUSB0"));
+    parser.addOption(setSerialPort);
     parser.process(a);
 
     bool simulate = parser.isSet(showSimulatorSerial);
+    QString serial_port = parser.value(setSerialPort);
 
     Nodes slaves;
-    SerialServer serialServer(simulate);
+    SerialServer serialServer(simulate, serial_port);
     QObject::connect(&serialServer, SIGNAL(getSerial(QString)), &slaves, SLOT(addNodes(QString)));
 
     SerialSimulator serialSimulator;

@@ -127,7 +127,7 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                         commands[it].toObject().value(key).toObject().contains("action")) {
                     QJsonObject timestamp, objts, node;
 
-                    int ts = QDateTime::currentDateTime().toTime_t();
+                    int ts = QDateTime::currentDateTime().toUTC().toTime_t();
                     int sec = commands[it].toObject().value(key).toObject().value("time").toInt();
 
                     objts.insert("to_range", commands[it].toObject().value(key).toObject().value("action").toObject().value("range").toString());

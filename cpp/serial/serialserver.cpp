@@ -127,11 +127,12 @@ void SerialServer::receiveCommand(const QJsonObject commands)
                         commands[it].toObject().value(key).toObject().contains("action")) {
                     QJsonObject timestamp, objts, node;
 
-                    int ts = QDateTime::currentDateTime().toUTC().toTime_t();
+                    //int ts = QDateTime::currentDateTime().toUTC().toTime_t();
                     int sec = commands[it].toObject().value(key).toObject().value("time").toInt();
 
                     objts.insert("to_range", commands[it].toObject().value(key).toObject().value("action").toObject().value("range").toString());
-                    objts.insert("end", ts + sec);
+                    //objts.insert("end", ts + sec);
+                    objts.insert("time", sec);
 
                     node.insert(it, objts);
                     list_stopwatch.append(node);
@@ -169,14 +170,29 @@ void SerialServer::stopWatch()
     for (quint8 i = 0; i < list_stopwatch.count(); i++) {
         QStringList nodes = list_stopwatch.at(i).keys();
         for (QString key: nodes) {
+            if (list_stopwatch.at(i).value(key).toObject().value("time").toDouble() > 0) {
+                double v_time = list_stopwatch.at(i).value(key).toObject().value("time").toDouble() -1;
+                QJsonObject values, node;
+                values.insert("time", v_time);
+                values.insert("to_range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                //values.insert("end", list_stopwatch.at(i).value(key).toObject().value("end").toDouble());
+                node.insert(key, values);
 
-            if (list_stopwatch.at(i).value(key).toObject().value("end").toDouble() <= (double) QDateTime::currentDateTime().toTime_t()) {
+                list_stopwatch.replace(i, node);
+            } else {
                 QJsonObject range, node;
                 range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
                 node.insert(key, range);
                 list_stopwatch.removeAt(i);
                 prepareSerial(node);
             }
+            /*if (list_stopwatch.at(i).value(key).toObject().value("end").toDouble() <= (double) QDateTime::currentDateTime().toTime_t()) {
+                QJsonObject range, node;
+                range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                node.insert(key, range);
+                list_stopwatch.removeAt(i);
+                prepareSerial(node);
+            }*/
         }
     }
 

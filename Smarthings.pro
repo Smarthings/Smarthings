@@ -11,10 +11,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     cpp/udp/udpserver.cpp \
-    cpp/tcp/tcpserver.cpp \
-    cpp/tcp/tcpconnection.cpp \
     cpp/serial/serialserver.cpp \
-    cpp/serial/nodes.cpp
+    cpp/serial/nodes.cpp \
+    cpp/tcp/tcpserver.cpp \
+    cpp/serial/serialsimulator.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -29,7 +29,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     cpp/udp/udpserver.h \
-    cpp/tcp/tcpserver.h \
-    cpp/tcp/tcpconnection.h \
     cpp/serial/serialserver.h \
-    cpp/serial/nodes.h
+    cpp/serial/nodes.h \
+    cpp/tcp/tcpserver.h \
+    cpp/serial/serialsimulator.h \
+    cpp/serial/serialsimulator.h

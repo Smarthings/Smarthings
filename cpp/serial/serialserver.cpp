@@ -2,9 +2,14 @@
 
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
-SerialServer::SerialServer(QObject *parent) :
+SerialServer::SerialServer(bool simulate, QString port, QObject *parent) :
     QObject(parent)
 {
+    v_simulate = simulate;
+    if (v_simulate)
+        return;
+    v_port = port;
+
     serial = new QSerialPort(this);
     this->ConfigureSerial();
     this->openSerialPort();
@@ -18,7 +23,10 @@ void SerialServer::ConfigureSerial()
 {
     qDebug() << "Configure Serial";
     QStringList ports = this->AvailablePorts();
-    serial->setPortName(ports.at(4));
+    if (v_port.isNull())
+        serial->setPortName(ports.at(4));
+    else
+        serial->setPortName(v_port);
     serial->setBaudRate(QSerialPort::Baud57600, QSerialPort::AllDirections);
     serial->setDataBits(QSerialPort::Data8);
     serial->setParity(QSerialPort::NoParity);
@@ -86,11 +94,15 @@ void SerialServer::readData()
 
 void SerialServer::writeData(const QByteArray &data)
 {
+    if (v_simulate)
+        return;
     serial->write(data);
 }
 
 void SerialServer::writeSerial(const QJsonObject nodes)
 {
+    if (v_simulate)
+        return;
     for (const QJsonValue &node: nodes) {
         QByteArray node_write;
         node_write.append(node.toString());
@@ -98,14 +110,93 @@ void SerialServer::writeSerial(const QJsonObject nodes)
     }
 }
 
-void SerialServer::prepareSerial(const QJsonObject nodes)
+void SerialServer::receiveCommand(const QJsonObject commands)
 {
-    QStringList nodes_list = nodes.keys();
-    for (const QString &node: nodes_list) {
-        QString range = nodes[node].toObject().value("action").toObject().value("range").toString();
-        QStringList str_node;
-        str_node << "#0" << range << "00" << node << ":";
+    QStringList command_list = commands.keys();
+    for (const QString &it: command_list) {
+        QStringList command = commands[it].toObject().keys();
+        for (const QString &key: command) {
+            if (key == "action") {
+                QJsonObject node;
+                node.insert(it, commands[it].toObject().value(key));
+                prepareSerial(node);
+                continue;
+            }
+            if (key == "stopwatch") {
+                    if (commands[it].toObject().value(key).toObject().contains("time") &&
+                        commands[it].toObject().value(key).toObject().contains("action")) {
+                    QJsonObject timestamp, objts, node;
 
-        serial->write(QString(str_node.join("")).toUtf8());
+                    //int ts = QDateTime::currentDateTime().toUTC().toTime_t();
+                    int sec = commands[it].toObject().value(key).toObject().value("time").toInt();
+
+                    objts.insert("to_range", commands[it].toObject().value(key).toObject().value("action").toObject().value("range").toString());
+                    //objts.insert("end", ts + sec);
+                    objts.insert("time", sec);
+
+                    node.insert(it, objts);
+                    list_stopwatch.append(node);
+
+                    QJsonObject node_send;
+                    QJsonArray node_array;
+
+                    node_send.insert("Stopwatch", node);
+                    node_array.append(node_send);
+                    emit sendStopwatchCommand(node_array);
+
+                    connect(timer, SIGNAL(timeout()), this, SLOT(stopWatch()));
+                    if (!timer->isActive()) {
+                        timer->start(1000);
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+void SerialServer::prepareSerial(const QJsonObject node)
+{
+    QStringList write_node;
+    write_node << "#0" << node[node.keys()[0]].toObject().value("range").toString() << "00" << node.keys()[0] << ":";
+    if (!v_simulate)
+        serial->write(QString(write_node.join("")).toUtf8());
+    else
+        emit writeSerialSimulate(node);
+}
+
+void SerialServer::stopWatch()
+{
+    for (quint8 i = 0; i < list_stopwatch.count(); i++) {
+        QStringList nodes = list_stopwatch.at(i).keys();
+        for (QString key: nodes) {
+            if (list_stopwatch.at(i).value(key).toObject().value("time").toDouble() > 0) {
+                double v_time = list_stopwatch.at(i).value(key).toObject().value("time").toDouble() -1;
+                QJsonObject values, node;
+                values.insert("time", v_time);
+                values.insert("to_range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                //values.insert("end", list_stopwatch.at(i).value(key).toObject().value("end").toDouble());
+                node.insert(key, values);
+
+                list_stopwatch.replace(i, node);
+            } else {
+                QJsonObject range, node;
+                range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                node.insert(key, range);
+                list_stopwatch.removeAt(i);
+                prepareSerial(node);
+            }
+            /*if (list_stopwatch.at(i).value(key).toObject().value("end").toDouble() <= (double) QDateTime::currentDateTime().toTime_t()) {
+                QJsonObject range, node;
+                range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
+                node.insert(key, range);
+                list_stopwatch.removeAt(i);
+                prepareSerial(node);
+            }*/
+        }
+    }
+
+    if (list_stopwatch.count() == 0) {
+        timer->stop();
     }
 }

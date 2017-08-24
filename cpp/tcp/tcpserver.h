@@ -2,34 +2,37 @@
 #define TCPSERVER_H
 
 #include <QObject>
+#include <QList>
+#include <QTimer>
 #include <QTcpServer>
+#include <QTcpSocket>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonValue>
+#include <QDebug>
 
-#include "tcpconnection.h"
-
-class TcpServer : public QTcpServer
+class TcpServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit TcpServer(QObject *parent = 0);
-    ~TcpServer();
+    explicit TcpServer(QObject *parent = nullptr);
 
 signals:
-    void getNodes(QJsonArray nodes);
-    void getAllNodes();
-    void sendCommandNode(QJsonObject object);
+    void newConnect(QTcpSocket *client);
+    void getAllNodes(QTcpSocket *client);
+    void sendCommandFromNode(QJsonObject object);
 
 public slots:
-    void nodesChanged(QJsonArray nodes);
-    void receiveAllNodes(QJsonArray nodes);
-    void CommandNode(QJsonObject object);
-
-protected:
-    int port;
-    void incomingConnection(qintptr socketDescriptor);
+    void incomingConnect();
+    void readyRead();
+    void disconnectSocket();
+    void writeWithSocket(QJsonArray nodes, QTcpSocket *client);
+    void writeAllSocket(QJsonArray nodes);
 
 private:
-    QJsonArray *nodes_all;
+    QTcpServer *server;
+    QList<QTcpSocket *> clients;
 };
 
 #endif // TCPSERVER_H

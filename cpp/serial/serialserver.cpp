@@ -195,12 +195,6 @@ void SerialServer::stopWatch()
 
 void SerialServer::requireGetAllStopwatch(QTcpSocket *client)
 {
-    QTimer waiting;
-    waiting.start(500);
-}
-
-void SerialServer::getAllStopwatch(QTcpSocket *client)
-{
     for (quint8 i = 0; i < list_stopwatch.count(); i++) {
         QStringList nodes = list_stopwatch.at(i).keys();
         for (QString key: nodes) {

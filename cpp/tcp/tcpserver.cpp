@@ -10,6 +10,7 @@ TcpServer::TcpServer(QObject *parent) : QObject(parent)
     }
 
     connect(this, SIGNAL(newConnect(QTcpSocket*)), this, SIGNAL(getAllNodes(QTcpSocket*)));
+    connect(this, SIGNAL(newConnect(QTcpSocket*)), this, SIGNAL(getAllStopwatch(QTcpSocket*)));
 }
 
 void TcpServer::incomingConnect()

@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QDateTime>
+#include <QTcpSocket>
 
 class SerialServer : public QObject
 {
@@ -27,6 +28,7 @@ signals:
     void getSerial(const QString read_serial);
     void writeSerialSimulate(QJsonObject node);
     void sendStopwatchCommand(QJsonArray node_array);
+    void sendStopwatchToClient(QJsonArray node_array, QTcpSocket *client);
 
 public slots:
     void writeSerial(const QJsonObject nodes);
@@ -34,6 +36,8 @@ public slots:
     void writeData(const QByteArray &data);
     void readData();
     void stopWatch();
+    void requireGetAllStopwatch(QTcpSocket *client);
+    void getAllStopwatch(QTcpSocket *client);
 
 protected:
     void prepareSerial(const QJsonObject node);

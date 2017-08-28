@@ -21,6 +21,7 @@ public:
 signals:
     void newConnect(QTcpSocket *client);
     void getAllNodes(QTcpSocket *client);
+    void getAllStopwatch(QTcpSocket *client);
     void sendCommandFromNode(QJsonObject object);
 
 public slots:

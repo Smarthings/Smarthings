@@ -175,7 +175,6 @@ void SerialServer::stopWatch()
                 QJsonObject values, node;
                 values.insert("time", v_time);
                 values.insert("to_range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
-                //values.insert("end", list_stopwatch.at(i).value(key).toObject().value("end").toDouble());
                 node.insert(key, values);
 
                 list_stopwatch.replace(i, node);
@@ -186,17 +185,31 @@ void SerialServer::stopWatch()
                 list_stopwatch.removeAt(i);
                 prepareSerial(node);
             }
-            /*if (list_stopwatch.at(i).value(key).toObject().value("end").toDouble() <= (double) QDateTime::currentDateTime().toTime_t()) {
-                QJsonObject range, node;
-                range.insert("range", list_stopwatch.at(i).value(key).toObject().value("to_range").toString());
-                node.insert(key, range);
-                list_stopwatch.removeAt(i);
-                prepareSerial(node);
-            }*/
         }
     }
 
     if (list_stopwatch.count() == 0) {
         timer->stop();
+    }
+}
+
+void SerialServer::requireGetAllStopwatch(QTcpSocket *client)
+{
+    QTimer waiting;
+    waiting.start(500);
+}
+
+void SerialServer::getAllStopwatch(QTcpSocket *client)
+{
+    for (quint8 i = 0; i < list_stopwatch.count(); i++) {
+        QStringList nodes = list_stopwatch.at(i).keys();
+        for (QString key: nodes) {
+            QJsonObject node, stopwatch;
+            QJsonArray node_array;
+            node.insert(key, list_stopwatch.at(i).value(key));
+            stopwatch.insert("Stopwatch", node);
+            node_array.append(stopwatch);
+            emit sendStopwatchToClient(node_array, client);
+        }
     }
 }

@@ -49,7 +49,9 @@ void TcpServer::writeWithSocket(QJsonArray nodes, QTcpSocket *client)
 {
     if (client->isWritable()) {
         QJsonDocument json_document(nodes);
-        client->write(json_document.toJson());
+        QByteArray data_send = json_document.toJson(QJsonDocument::Compact);
+        data_send.append('\n');
+        client->write(data_send);
     }
 }
 
@@ -58,7 +60,9 @@ void TcpServer::writeAllSocket(QJsonArray nodes)
     QJsonDocument json_document(nodes);
     for (auto client: clients) {
         client->flush();
-        client->write(json_document.toJson());
+        QByteArray data_send = json_document.toJson(QJsonDocument::Compact);
+        data_send.append('\n');
+        client->write(data_send);
     }
 }
 

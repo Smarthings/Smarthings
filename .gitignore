@@ -6,3 +6,4 @@ moc_*
 Makefile
 Extra/TcpServer/TcpServer
 Extra/TcpClient/TcpClient
+build
